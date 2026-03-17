@@ -7,8 +7,6 @@ public class Main {
         OnlineWorker worker = new OnlineWorker("Ines", "Salvans", 20);
         JsonFileSaver.saveObjectInJsonFile(worker);
 
-        Class<?> typeClass = worker.getClass();
-        Annotation[] classAnnotations = typeClass.getAnnotations();
-        AnnotationChecker.checkIfToJsonFileAnnotationIsRegistered(typeClass, classAnnotations);
+        System.out.println(AnnotationChecker.checkIfToJsonFileAnnotationIsRegistered(worker));
     }
 }
