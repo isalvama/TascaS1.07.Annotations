@@ -8,27 +8,30 @@ import java.io.IOException;
 
 public class JsonFileSaver {
 
-    public static void saveObjectInJsonFile(Object object) throws IOException {
+    public static void saveObjectInJsonFile(Object object) {
         if (object.getClass().isAnnotationPresent(ToJsonFile.class)) {
             ToJsonFile annotation = object.getClass().getAnnotation(ToJsonFile.class);
             String outputFileDirectoryPath = annotation.directoryPath();
             try {
                 String objInJson = convertObjToJsonStr(object);
                     saveStringInFile(objInJson, outputFileDirectoryPath);
-                } catch (JsonProcessingException jpe) {
-                    throw new IOException("Error serializing the object to JSON: ", jpe);
-            } catch (IOException ioe) {
-                throw new IOException("Error writing the JSON string to file: ", ioe);
+            } catch (RuntimeException | IOException e) {
+                System.err.println(e.getMessage());
             }
         }
+        System.out.println("The object passed as parameter does not belong to a class with the ToJsonFile annotation.");
     }
 
     private static String convertObjToJsonStr(Object object) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(object);
-        System.out.println("Serialized JSON:");
-        System.out.println(jsonString);
-        return jsonString;
+        try {
+            String jsonString = objectMapper.writeValueAsString(object);
+            System.out.println("Serialized JSON:");
+            System.out.println(jsonString);
+            return jsonString;
+        } catch (JsonProcessingException jpe){
+            throw new RuntimeException("Error serializing to JSON", jpe);
+        }
     }
 
     private static void saveStringInFile(String jsonString, String outputFileDirectoryPath) throws IOException {
